@@ -1,0 +1,253 @@
+/* src/pages/PHome/PHome.css */
+
+.erp-shell {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #0f172a; /* Dark Navy Background */
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Corporativo Superior */
+.erp-topbar {
+  background-color: #1e293b;
+  border-bottom: 1px solid #334155;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
+}
+
+.brand-title h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.brand-title p {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.stat-pills {
+  display: flex;
+  gap: 12px;
+}
+
+.pill-stat {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.825rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill-stat strong {
+  color: #38bdf8;
+  font-size: 0.95rem;
+}
+
+/* Área de Alerta / Toast */
+.erp-toast {
+  margin: 16px 32px 0 32px;
+  padding: 12px 18px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.erp-toast.sucesso {
+  background-color: #064e3b;
+  border: 1px solid #059669;
+  color: #a7f3d0;
+}
+
+.erp-toast.erro {
+  background-color: #7f1d1d;
+  border: 1px solid #dc2626;
+  color: #fecaca;
+}
+
+/* Layout Principal em 2 Colunas Expansíveis */
+.erp-workspace {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 24px;
+  padding: 24px 32px;
+  flex: 1;
+}
+
+/* Container do Painel Direito (Tabela) */
+.erp-card-table {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.table-toolbar {
+  padding: 18px 24px;
+  border-bottom: 1px solid #334155;
+  background-color: #1b263b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-toolbar h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.erp-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.erp-table th {
+  background-color: #0f172a;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 20px;
+  border-bottom: 1px solid #334155;
+}
+
+.erp-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #334155;
+  color: #cbd5e1;
+}
+
+.erp-table tbody tr:hover {
+  background-color: #273549;
+}
+
+/* Badges e Tags */
+.code-badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+  background-color: #0284c7;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.price-text {
+  font-weight: 700;
+  color: #34d399;
+}
+
+.stock-pill {
+  background-color: #334155;
+  color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-action-edit {
+  background-color: #334155;
+  color: #38bdf8;
+  border: 1px solid #475569;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-action-edit:hover {
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+.btn-action-delete {
+  background-color: #334155;
+  color: #f87171;
+  border: 1px solid #475569;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-action-delete:hover {
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.state-empty {
+  padding: 60px 24px;
+  text-align: center;
+  color: #64748b;
+}
+
+.state-empty h4 {
+  color: #94a3b8;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1024px) {
+  .erp-workspace {
+    grid-template-columns: 1fr;
+  }
+}
