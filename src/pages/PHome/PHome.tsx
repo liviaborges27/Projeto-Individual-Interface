@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Filter, PackageOpen, Pencil, Search, Server, Trash2 } from "lucide-react";
 import type ProdutoDTO from "../../dto/ProdutoDTO";
 import { ProdutoRequests } from "../../fetch/ProdutoRequests";
 import { FormularioProduto } from "../../components/FormularioProduto/FormularioProduto";
@@ -10,6 +11,13 @@ export default function PHome() {
     const [mensagemStatus, setMensagemStatus] = useState<string | null>(null);
     const [tipoStatus, setTipoStatus] = useState<"sucesso" | "erro">("sucesso");
     const [carregando, setCarregando] = useState<boolean>(true);
+    const [termoBusca, setTermoBusca] = useState("");
+    const editingId = produtoSelecionado?.id_produto ?? null;
+
+    const produtosFiltrados = produtos.filter((produto) => {
+        const termo = termoBusca.trim().toLowerCase();
+        return !termo || produto.nome.toLowerCase().includes(termo) || produto.codigo.toLowerCase().includes(termo);
+    });
 
     const carregarProdutos = async () => {
         setCarregando(true);
@@ -35,45 +43,44 @@ export default function PHome() {
         setTimeout(() => setMensagemStatus(null), 4000);
     };
 
-    const handleSalvarProduto = async (novoProduto: ProdutoDTO) => {
-        let sucesso = false;
+    const handleSalvarProduto = async (produtoAtualizado: ProdutoDTO) => {
+        if (editingId !== null) {
+            const produtoEditado = { ...produtoAtualizado, id_produto: editingId };
+            const sucesso = await ProdutoRequests.atualizarProduto(produtoEditado);
 
-        if (novoProduto.id_produto) {
-            // Edição
-            sucesso = await ProdutoRequests.atualizarProduto(novoProduto);
-            if (sucesso) {
-                mostrarToast("Produto atualizado com sucesso.", "sucesso");
-                setProdutos((prev) =>
-                    prev.map((p) => (p.id_produto === novoProduto.id_produto ? novoProduto : p))
-                );
+            if (!sucesso) {
+                mostrarToast("Não foi possível atualizar o produto. Tente novamente.", "erro");
+                return;
             }
-        } else {
-            // Cadastro
-            sucesso = await ProdutoRequests.cadastrarProduto(novoProduto);
-            if (sucesso) {
-                mostrarToast("Produto cadastrado com sucesso.", "sucesso");
-                // Adiciona o produto à lista local para exibição imediata
-                const produtoComId = {
-                    ...novoProduto,
-                    id_produto: novoProduto.id_produto || Date.now()
-                };
-                setProdutos((prev) => [produtoComId, ...prev]);
-            }
+
+            setProdutos((prev) =>
+                prev.map((produto) => produto.id_produto === editingId ? produtoEditado : produto)
+            );
+            setProdutoSelecionado(null);
+            mostrarToast("Produto atualizado com sucesso.", "sucesso");
+            return;
         }
 
-        if (sucesso) {
-            setProdutoSelecionado(null);
-            carregarProdutos();
-        } else {
-            // Fallback: se a API retornar erro/indisponível, registra localmente para visualização
-            const produtoComId = {
-                ...novoProduto,
-                id_produto: novoProduto.id_produto || Date.now()
-            };
-            setProdutos((prev) => [produtoComId, ...prev]);
-            setProdutoSelecionado(null);
-            mostrarToast("Cadastrado em modo local (verifique a conexão com o servidor).", "sucesso");
-        }
+        const sucesso = await ProdutoRequests.cadastrarProduto(produtoAtualizado);
+        const produtoComId = {
+            ...produtoAtualizado,
+            id_produto: produtoAtualizado.id_produto || Date.now()
+        };
+
+        setProdutos((prev) => [produtoComId, ...prev]);
+        setProdutoSelecionado(null);
+        mostrarToast(
+            sucesso ? "Produto cadastrado com sucesso." : "Cadastrado em modo local (verifique a conexão com o servidor).",
+            "sucesso"
+        );
+    };
+
+    const handleEdit = (produto: ProdutoDTO) => {
+        setProdutoSelecionado(produto);
+    };
+
+    const handleCancelEdit = () => {
+        setProdutoSelecionado(null);
     };
 
     const handleRemoverProduto = async (id_produto?: number, codigo?: string) => {
@@ -93,9 +100,11 @@ export default function PHome() {
             {/* Topbar Corporativa */}
             <header className="erp-topbar">
                 <div className="brand-section">
-                    <div className="brand-icon">ERP</div>
+                    <div className="brand-icon" aria-label="ERP">
+                        <Server size={20} strokeWidth={2.2} />
+                    </div>
                     <div className="brand-title">
-                        <h1>Módulo de Gestão de Inventário</h1>
+                        <h1><Server size={18} /> Controle InfoTech</h1>
                         <p>Controle central de produtos, precificação e estoque</p>
                     </div>
                 </div>
@@ -113,8 +122,9 @@ export default function PHome() {
                 <div className={`erp-toast ${tipoStatus}`}>
                     <span>{mensagemStatus}</span>
                     <button
+                        className="toast-close"
                         onClick={() => setMensagemStatus(null)}
-                        style={{ background: "none", border: "none", color: "inherit", cursor: "pointer" }}
+                        aria-label="Fechar aviso"
                     >
                         ✕
                     </button>
@@ -127,13 +137,31 @@ export default function PHome() {
                     <FormularioProduto
                         produtoParaEditar={produtoSelecionado}
                         onSubmit={handleSalvarProduto}
-                        onCancelar={() => setProdutoSelecionado(null)}
+                        onCancelar={handleCancelEdit}
                     />
                 </aside>
 
                 <section className="erp-card-table">
                     <div className="table-toolbar">
-                        <h2>Inventário Registrado</h2>
+                        <div className="table-heading">
+                            <h2>Inventário Registrado <span>{produtos.length}</span></h2>
+                            <p>Consulte e gerencie os produtos cadastrados</p>
+                        </div>
+                        <div className="table-controls">
+                            <label className="search-box">
+                                <Search size={16} aria-hidden="true" />
+                                <input
+                                    type="search"
+                                    placeholder="Buscar por nome ou código..."
+                                    value={termoBusca}
+                                    onChange={(event) => setTermoBusca(event.target.value)}
+                                    aria-label="Buscar por nome ou código"
+                                />
+                            </label>
+                            <button className="btn-filter" type="button" aria-label="Filtrar inventário" title="Filtrar inventário">
+                                <Filter size={16} />
+                            </button>
+                        </div>
                     </div>
 
                     {carregando && produtos.length === 0 ? (
@@ -142,8 +170,15 @@ export default function PHome() {
                         </div>
                     ) : produtos.length === 0 ? (
                         <div className="state-empty">
-                            <h4>Nenhum produto cadastrado no momento.</h4>
+                            <div className="empty-icon"><PackageOpen size={28} /></div>
+                            <h4>Nenhum produto cadastrado</h4>
                             <p>Utilize o formulário ao lado para incluir novos itens.</p>
+                        </div>
+                    ) : produtosFiltrados.length === 0 ? (
+                        <div className="state-empty">
+                            <div className="empty-icon"><Search size={28} /></div>
+                            <h4>Nenhum produto encontrado</h4>
+                            <p>Tente buscar por outro nome ou código.</p>
                         </div>
                     ) : (
                         <div className="table-responsive">
@@ -159,7 +194,7 @@ export default function PHome() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {produtos.map((p) => (
+                                    {produtosFiltrados.map((p) => (
                                         <tr key={p.id_produto || p.codigo}>
                                             <td>
                                                 <span className="code-badge">{p.codigo}</span>
@@ -167,7 +202,7 @@ export default function PHome() {
                                             <td>
                                                 <strong>{p.nome}</strong>
                                                 {p.descricao && (
-                                                    <div style={{ fontSize: "0.775rem", color: "#64748b" }}>
+                                                    <div className="product-description">
                                                         {p.descricao}
                                                     </div>
                                                 )}
@@ -185,14 +220,20 @@ export default function PHome() {
                                                 <div className="action-buttons">
                                                     <button
                                                         className="btn-action-edit"
-                                                        onClick={() => setProdutoSelecionado(p)}
+                                                        onClick={() => handleEdit(p)}
+                                                        aria-label={`Editar ${p.nome}`}
+                                                        title="Editar produto"
                                                     >
+                                                        <Pencil size={15} />
                                                         Editar
                                                     </button>
                                                     <button
                                                         className="btn-action-delete"
                                                         onClick={() => handleRemoverProduto(p.id_produto, p.codigo)}
+                                                        aria-label={`Excluir ${p.nome}`}
+                                                        title="Excluir produto"
                                                     >
+                                                        <Trash2 size={15} />
                                                         Excluir
                                                     </button>
                                                 </div>

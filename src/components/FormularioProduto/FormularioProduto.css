@@ -1,43 +1,39 @@
-/* src/components/FormularioProduto/FormularioProduto.css */
-
 .erp-card-form {
-  background-color: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 8px;
+  height: fit-content;
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
 }
 
 .form-header-title {
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #334155;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .form-header-title h3 {
-  font-size: 0.95rem;
+  color: #0f172a;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #f1f5f9;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
+  letter-spacing: 0.04em;
 }
 
 .form-alert-error {
-  background-color: #7f1d1d;
-  border: 1px solid #ef4444;
-  color: #fecaca;
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 0.825rem;
-  font-weight: 500;
   margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 0.9rem;
 }
 
 .form-fields-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 18px 16px;
 }
 
 .col-span-2 {
@@ -51,74 +47,118 @@
 }
 
 .field-box label {
-  font-size: 0.75rem;
+  color: #334155;
+  font-size: 0.875rem;
   font-weight: 700;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .field-box input,
-.field-box textarea {
+.field-box textarea,
+.field-box select {
   width: 100%;
-  padding: 9px 12px;
-  background-color: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: #f8fafc;
+  padding: 12px 14px;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  box-sizing: border-box;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 1rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field-box input::placeholder,
+.field-box textarea::placeholder {
+  color: #64748b;
 }
 
 .field-box input:focus,
-.field-box textarea:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+.field-box textarea:focus,
+.field-box select:focus {
+  border-color: #1e3a8a;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
 }
 
 .field-box input:disabled {
-  background-color: #1e293b;
+  background: #e2e8f0;
   color: #64748b;
   cursor: not-allowed;
 }
 
+.field-box select {
+  cursor: pointer;
+}
+
 .form-btn-group {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .btn-erp-primary {
   flex: 1;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #1e3a8a;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1e3a8a;
   color: #ffffff;
+  font-size: 0.95rem;
   font-weight: 700;
-  font-size: 0.875rem;
-  padding: 11px 16px;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-erp-primary:hover {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-color: #172554;
+  background: #172554;
+}
+
+.btn-erp-primary.btn-erp-edit {
+  border-color: #047857;
+  background: #047857;
+}
+
+.btn-erp-primary.btn-erp-edit:hover {
+  border-color: #065f46;
+  background: #065f46;
 }
 
 .btn-erp-secondary {
-  background-color: #334155;
-  color: #cbd5e1;
-  font-weight: 600;
-  font-size: 0.875rem;
-  padding: 11px 16px;
-  border: 1px solid #475569;
-  border-radius: 6px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .btn-erp-secondary:hover {
-  background-color: #475569;
-  color: #ffffff;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+@media (max-width: 640px) {
+  .erp-card-form {
+    padding: 20px;
+  }
+
+  .form-fields-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .col-span-2 {
+    grid-column: span 1;
+  }
+
+  .form-btn-group {
+    flex-direction: column;
+  }
 }

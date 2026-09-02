@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Plus } from "lucide-react";
 import type ProdutoDTO from "../../dto/ProdutoDTO";
 import "./FormularioProduto.css";
 
@@ -44,7 +45,7 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
         }
     }, [produtoParaEditar]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
@@ -99,7 +100,7 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
     return (
         <div className="erp-card-form">
             <div className="form-header-title">
-                <h3>{produtoParaEditar ? "Modificar Registro" : "Novo Cadastro"}</h3>
+                <h3>{produtoParaEditar ? "EDITAR PRODUTO" : "NOVO CADASTRO"}</h3>
             </div>
 
             {mensagemErro && (
@@ -125,14 +126,19 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
                     </div>
 
                     <div className="field-box">
-                        <label htmlFor="id_categoria">ID Categoria *</label>
-                        <input
+                        <label htmlFor="id_categoria">Categoria *</label>
+                        <select
                             id="id_categoria"
                             name="id_categoria"
-                            type="number"
                             value={formData.id_categoria}
                             onChange={handleChange}
-                        />
+                        >
+                            <option value="1">Categoria 1</option>
+                            <option value="2">Categoria 2</option>
+                            <option value="3">Categoria 3</option>
+                            <option value="4">Categoria 4</option>
+                            <option value="5">Categoria 5</option>
+                        </select>
                     </div>
 
                     <div className="field-box col-span-2">
@@ -187,12 +193,16 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
                 </div>
 
                 <div className="form-btn-group">
-                    <button type="submit" className="btn-erp-primary">
+                    <button
+                        type="submit"
+                        className={`btn-erp-primary ${produtoParaEditar ? "btn-erp-edit" : ""}`}
+                    >
+                        <Plus size={18} aria-hidden="true" />
                         {produtoParaEditar ? "Salvar Alterações" : "Cadastrar Produto"}
                     </button>
                     {produtoParaEditar && (
                         <button type="button" onClick={onCancelar} className="btn-erp-secondary">
-                            Cancelar
+                            Cancelar Edição
                         </button>
                     )}
                 </div>

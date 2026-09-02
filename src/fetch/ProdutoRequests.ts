@@ -1,7 +1,7 @@
 import type ProdutoDTO from "../dto/ProdutoDTO";
 
-// URL base da sua API Backend (ajuste a porta se necessário)
-const BASE_URL = "http://localhost:3000/api";
+// O Vite encaminha /api para o backend local durante o desenvolvimento.
+const BASE_URL = "/api";
 
 export class ProdutoRequests {
 
@@ -45,6 +45,11 @@ export class ProdutoRequests {
      * Atualiza as informações de um produto existente
      */
     static async atualizarProduto(produto: ProdutoDTO): Promise<boolean> {
+        if (!produto.id_produto) {
+            console.error("Erro ao atualizar produto: ID do produto não informado.");
+            return false;
+        }
+
         try {
             const resposta = await fetch(`${BASE_URL}/produtos/${produto.id_produto}`, {
                 method: "PUT",
