@@ -1,57 +1,67 @@
 import { type JSX } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Boxes, Home, LogOut, RefreshCw, Tags } from "lucide-react";
+import "./Navegacao.css";
 
 function Navegacao(): JSX.Element {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("x-access-token");
+        localStorage.removeItem("user_info");
+        navigate("/login", { replace: true });
+    };
+
     const items = [
         {
             label: 'Home',
-            icon: 'pi pi-home',
-            className: 'm-5 text-white text-lg',
+            icon: Home,
             url: "/"
         },
         {
             label: 'Produtos',
-            icon: 'pi pi-box',
-            className: 'm-5 text-white text-lg',
-            url: "/"
+            icon: Boxes,
+            url: "/produtos"
         },
         {
             label: 'Categorias',
-            icon: 'pi pi-tags',
-            className: 'm-5 text-white text-lg',
+            icon: Tags,
             url: "/categorias"
         },
         {
             label: 'Movimentações',
-            icon: 'pi pi-sync',
-            className: 'm-5 text-white text-lg',
+            icon: RefreshCw,
             url: "/movimentacoes"   
         }
     ];
 
     return (
-        <header className="card h-[12vh] bg-slate-700 content-center">
-            <nav className="flex align-items-center justify-between">
-                <img
-                    alt="logo"
-                    src="/src/assets/app-icon.png"
-                    height="100"
-                    className="h-20 p-3 ml-10 mr-5 h-[7rem]"
-                />
-                <div className="flex align-items-center">
-                    {items.map((item) => (
-                        <a key={item.label} href={item.url} className={item.className}>
-                            <i className={`${item.icon} mr-2`} aria-hidden="true" />
-                            {item.label}
-                        </a>
-                    ))}
+        <header className="site-header">
+            <nav className="site-nav" aria-label="Navegação principal">
+                <NavLink to="/" className="site-brand" aria-label="InfoTech Admin - início">
+                    <span>InfoTech <strong>Admin</strong></span>
+                </NavLink>
+                <div className="nav-links">
+                    {items.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <NavLink key={item.label} to={item.url} end={item.url === "/"} className="nav-link">
+                                <Icon size={17} strokeWidth={2.2} aria-hidden="true" />
+                                <span>{item.label}</span>
+                            </NavLink>
+                        );
+                    })}
                 </div>
-                <div className="flex align-items-center gap-2">
-                    <p className="text-white content-center pr-[0.5rem]">InfoTech Admin</p>
-                    <img
-                        src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
-                        alt="Avatar de InfoTech Admin"
-                        className="rounded-full mr-10 !w-[25%] !h-[25%]"
-                    />
+                <div className="user-profile">
+                    <div className="user-copy">
+                        <span className="user-name">InfoTech Admin</span>
+                        <span className="user-role">Administrador</span>
+                    </div>
+                    <img src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" alt="Avatar de InfoTech Admin" className="user-avatar" />
+                    <button className="logout-button" type="button" onClick={handleLogout} title="Sair do sistema">
+                        <LogOut size={17} aria-hidden="true" />
+                        <span>Sair</span>
+                    </button>
                 </div>
             </nav>
         </header>

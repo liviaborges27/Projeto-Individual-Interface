@@ -3,7 +3,6 @@ import { Filter, PackageOpen, Pencil, Search, Server, Trash2 } from "lucide-reac
 import type ProdutoDTO from "../../dto/ProdutoDTO";
 import { ProdutoRequests } from "../../fetch/ProdutoRequests";
 import { FormularioProduto } from "../../components/FormularioProduto/FormularioProduto";
-import Navegacao from "../../components/Navegacao/Navegacao"; // <--- 1. Import do componente Navegacao
 import "./PHome.css";
 
 export default function PHome() {
@@ -98,9 +97,6 @@ export default function PHome() {
 
     return (
         <div>
-            {/* 2. Inclusão da Barra de Navegação no Topo */}
-            <Navegacao />
-
             <div className="erp-shell">
                 {/* Topbar Corporativa */}
                 <header className="erp-topbar">

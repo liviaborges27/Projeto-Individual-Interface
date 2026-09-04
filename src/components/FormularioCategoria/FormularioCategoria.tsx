@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type CategoriaDTO from "../../dto/CategoriaDTO";
 import { Validacoes, type ErrosValidacao } from "../../utils/validacoes";
+import "./FormularioCategoria.css";
 
 interface FormularioCategoriaProps {
     categoriaParaEditar: CategoriaDTO | null;
@@ -48,24 +49,28 @@ export function FormularioCategoria({ categoriaParaEditar, onSubmit, onCancelar 
     };
 
     return (
-        <form onSubmit={handleSubmit} className="erp-form">
-            <h3>{categoriaParaEditar ? "Editar Categoria" : "Nova Categoria"}</h3>
+        <form onSubmit={handleSubmit} className="erp-card-form">
+            <div className="form-header-title">
+                <h3>{categoriaParaEditar ? "EDITAR CATEGORIA" : "NOVA CATEGORIA"}</h3>
+            </div>
 
-            <div className="form-field">
-                <label>Nome da Categoria *</label>
+            <div className="field-box">
+                <label htmlFor="nome-categoria">Nome da Categoria *</label>
                 <input
+                    id="nome-categoria"
                     type="text"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     placeholder="Ex: Hardware"
                     className={erros.nome ? "input-erro" : ""}
                 />
-                {erros.nome && <span className="error-text">{erros.nome}</span>}
+                {erros.nome && <span className="form-alert-error">{erros.nome}</span>}
             </div>
 
-            <div className="form-field">
-                <label>Descrição</label>
+            <div className="field-box category-description-field">
+                <label htmlFor="descricao-categoria">Descrição</label>
                 <textarea
+                    id="descricao-categoria"
                     value={descricao}
                     onChange={(e) => setDescricao(e.target.value)}
                     placeholder="Detalhamento opcional da categoria..."
@@ -73,12 +78,12 @@ export function FormularioCategoria({ categoriaParaEditar, onSubmit, onCancelar 
                 />
             </div>
 
-            <div className="form-actions">
-                <button type="submit" className="btn-primary">
+            <div className="form-btn-group">
+                <button type="submit" className="btn-erp-primary">
                     {categoriaParaEditar ? "Atualizar" : "Salvar"}
                 </button>
                 {categoriaParaEditar && (
-                    <button type="button" onClick={onCancelar} className="btn-secondary">
+                    <button type="button" onClick={onCancelar} className="btn-erp-secondary">
                         Cancelar
                     </button>
                 )}

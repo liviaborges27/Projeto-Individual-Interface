@@ -3,7 +3,6 @@ import { Filter, FolderOpen, Pencil, Search, Tags, Trash2 } from "lucide-react";
 import type CategoriaDTO from "../../dto/CategoriaDTO";
 import { CategoriaRequests } from "../../fetch/CategoriaRequests";
 import { FormularioCategoria } from "../../components/FormularioCategoria/FormularioCategoria";
-import Navegacao from "../../components/Navegacao/Navegacao"; // <--- 1. Import do componente Navegacao
 import "./PCategorias.css";
 
 export default function PCategorias() {
@@ -96,9 +95,6 @@ export default function PCategorias() {
 
     return (
         <div>
-            {/* 2. Inclusão da Barra de Navegação no Topo */}
-            <Navegacao />
-
             <div className="erp-shell">
                 {/* Topbar Corporativa */}
                 <header className="erp-topbar">

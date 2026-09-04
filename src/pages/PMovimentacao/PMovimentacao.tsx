@@ -3,7 +3,6 @@ import { ArrowDownLeft, ArrowUpRight, Filter, ArrowLeftRight, Pencil, Search, Tr
 import type MovimentacaoDTO from "../../dto/MovimentacaoDTO";
 import { MovimentacaoRequests } from "../../fetch/MovimentacaoRequests";
 import { FormularioMovimentacao } from "../../components/FormularioMovimentacao/FormularioMovimentacao";
-import Navegacao from "../../components/Navegacao/Navegacao";
 import "./PMovimentacao.css";
 
 export default function PMovimentacao() {
@@ -19,9 +18,9 @@ export default function PMovimentacao() {
         const termo = termoBusca.trim().toLowerCase();
         return (
             !termo ||
-            m.id_produto.toString().includes(termo) ||
-            m.tipo_movimentacao.toLowerCase().includes(termo) ||
-            (m.observacao && m.observacao.toLowerCase().includes(termo))
+            String(m.id_produto ?? "").includes(termo) ||
+            String(m.tipo_movimentacao ?? "").toLowerCase().includes(termo) ||
+            String(m.observacao ?? "").toLowerCase().includes(termo)
         );
     });
 
@@ -101,8 +100,6 @@ export default function PMovimentacao() {
 
     return (
         <div>
-            <Navegacao />
-
             <div className="erp-shell">
                 {/* Topbar Corporativa */}
                 <header className="erp-topbar">
@@ -203,7 +200,7 @@ export default function PMovimentacao() {
                                         {movimentacoesFiltradas.map((m) => (
                                             <tr key={m.id_movimentacao}>
                                                 <td>
-                                                    <span className={`type-badge ${m.tipo_movimentacao.toLowerCase()}`}>
+                                                    <span className={`type-badge ${String(m.tipo_movimentacao ?? "").toLowerCase()}`}>
                                                         {m.tipo_movimentacao === "ENTRADA" ? (
                                                             <> <ArrowDownLeft size={14} /> Entrada </>
                                                         ) : (

@@ -10,7 +10,13 @@ export class ProdutoRequests {
      */
     static async listarProdutos(): Promise<Array<ProdutoDTO> | null> {
         try {
-            const resposta = await fetch(`${BASE_URL}/produtos`);
+            const resposta = await fetch(`${BASE_URL}/produtos`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-access-token": localStorage.getItem("x-access-token") || ""
+                }
+            });
             if (!resposta.ok) {
                 return null;
             }

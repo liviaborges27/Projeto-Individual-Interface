@@ -1,23 +1,49 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import Navegacao from "./components/Navegacao/Navegacao";
+import Rodape from "./components/Rodape/Rodape";
+import PLogin from "./pages/PLogin/PLogin";
+import Home from "./pages/Home/Home";
 import PHome from "./pages/PHome/PHome";
 import PCategorias from "./pages/PCategorias/PCategorias";
 import PMovimentacoes from "./pages/PMovimentacao/PMovimentacao";
+import "./App.css";
+
+// Componente Guardião: verifica se o usuário possui token ativo
+function PrivateRoute() {
+  const token = localStorage.getItem("x-access-token");
+  return token ? <Outlet /> : <Navigate to="/login" replace />;
+}
+
+// Shell com Navegação e Rodapé
+function AppShell() {
+  return (
+    <div className="app-layout">
+      <Navegacao />
+      <div className="app-content"><Outlet /></div>
+      <Rodape />
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rota Principal: Gestão de Produtos */}
-        <Route path="/" element={<PHome />} />
+        {/* Rota Pública de Login (fora do AppShell) */}
+        <Route path="/login" element={<PLogin />} />
 
-        {/* Gestão de Categorias */}
-        <Route path="/categorias" element={<PCategorias />} />
+        {/* Rotas Protegidas (exigem Token e carregam o AppShell) */}
+        <Route element={<PrivateRoute />}>
+          <Route element={<AppShell />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/produtos" element={<PHome />} />
+            <Route path="/categorias" element={<PCategorias />} />
+            <Route path="/movimentacoes" element={<PMovimentacoes />} />
+          </Route>
+        </Route>
 
-        {/* Histórico e Registro de Movimentações */}
-        <Route path="/movimentacoes" element={<PMovimentacoes />} />
-
-        {/* Redirecionamento para rotas inexistentes */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Redirecionamento padrão para URLs inexistentes */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
