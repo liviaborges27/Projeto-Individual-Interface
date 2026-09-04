@@ -184,7 +184,6 @@ export default function PCategorias() {
                                 <table className="erp-table">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>Nome da Categoria</th>
                                             <th>Descrição</th>
                                             <th style={{ textAlign: "right" }}>Ações</th>
@@ -193,9 +192,6 @@ export default function PCategorias() {
                                     <tbody>
                                         {categoriasFiltradas.map((c) => (
                                             <tr key={c.id_categoria}>
-                                                <td>
-                                                    <span className="code-badge">#{c.id_categoria}</span>
-                                                </td>
                                                 <td>
                                                     <strong>{c.nome}</strong>
                                                 </td>

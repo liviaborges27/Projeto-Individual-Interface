@@ -55,7 +55,7 @@ function Navegacao(): JSX.Element {
                 <div className="user-profile">
                     <div className="user-copy">
                         <span className="user-name">InfoTech Admin</span>
-                        <span className="user-role">Administrador</span>
+                        <span className="user-role"><span className="user-status-dot" /> Administrador</span>
                     </div>
                     <img src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" alt="Avatar de InfoTech Admin" className="user-avatar" />
                     <button className="logout-button" type="button" onClick={handleLogout} title="Sair do sistema">

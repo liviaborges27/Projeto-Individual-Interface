@@ -1,17 +1,39 @@
 import { useEffect, useState } from "react";
-import { Filter, PackageOpen, Pencil, Search, Server, Trash2 } from "lucide-react";
+import { Filter, Package, PackageOpen, Pencil, Search, Server, Trash2 } from "lucide-react";
 import type ProdutoDTO from "../../dto/ProdutoDTO";
+import type CategoriaDTO from "../../dto/CategoriaDTO";
 import { ProdutoRequests } from "../../fetch/ProdutoRequests";
+import { CategoriaRequests } from "../../fetch/CategoriaRequests";
 import { FormularioProduto } from "../../components/FormularioProduto/FormularioProduto";
 import "./PHome.css";
 
+const IMAGENS_MOCK = {
+    teclado: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=500&q=80",
+    mouse: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=500&q=80",
+    hardware: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=500&q=80",
+    tecnologia: "https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=500&q=80"
+};
+
+function getImagemProduto(produto: ProdutoDTO) {
+    const imagemCadastrada = produto.imagem?.trim() || produto.imagem_url?.trim();
+    if (imagemCadastrada) return imagemCadastrada;
+
+    const nome = produto.nome.toLowerCase();
+    if (nome.includes("teclado")) return IMAGENS_MOCK.teclado;
+    if (nome.includes("mouse")) return IMAGENS_MOCK.mouse;
+    if (nome.includes("ssd") || nome.includes("ram") || nome.includes("memória") || nome.includes("memoria")) return IMAGENS_MOCK.hardware;
+    return IMAGENS_MOCK.tecnologia;
+}
+
 export default function PHome() {
     const [produtos, setProdutos] = useState<Array<ProdutoDTO>>([]);
+    const [categorias, setCategorias] = useState<Array<CategoriaDTO>>([]);
     const [produtoSelecionado, setProdutoSelecionado] = useState<ProdutoDTO | null>(null);
     const [mensagemStatus, setMensagemStatus] = useState<string | null>(null);
     const [tipoStatus, setTipoStatus] = useState<"sucesso" | "erro">("sucesso");
     const [carregando, setCarregando] = useState<boolean>(true);
     const [termoBusca, setTermoBusca] = useState("");
+    const [imagensComErro, setImagensComErro] = useState<Record<string, boolean>>({});
     const editingId = produtoSelecionado?.id_produto ?? null;
 
     const produtosFiltrados = produtos.filter((produto) => {
@@ -22,9 +44,15 @@ export default function PHome() {
     const carregarProdutos = async () => {
         setCarregando(true);
         try {
-            const lista = await ProdutoRequests.listarProdutos();
-            if (lista && Array.isArray(lista)) {
-                setProdutos(lista);
+            const [listaProdutos, listaCategorias] = await Promise.all([
+                ProdutoRequests.listarProdutos(),
+                CategoriaRequests.listarCategorias()
+            ]);
+            if (listaProdutos && Array.isArray(listaProdutos)) {
+                setProdutos(listaProdutos);
+            }
+            if (listaCategorias && Array.isArray(listaCategorias)) {
+                setCategorias(listaCategorias);
             }
         } catch (error) {
             console.error("Erro ao carregar lista de produtos:", error);
@@ -182,67 +210,63 @@ export default function PHome() {
                                 <p>Tente buscar por outro nome ou código.</p>
                             </div>
                         ) : (
-                            <div className="table-responsive">
-                                <table className="erp-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Código</th>
-                                            <th>Nome do Produto</th>
-                                            <th>Cat.</th>
-                                            <th>Preço Unitário</th>
-                                            <th>Qtd. Mínima</th>
-                                            <th style={{ textAlign: "right" }}>Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {produtosFiltrados.map((p) => (
-                                            <tr key={p.id_produto || p.codigo}>
-                                                <td>
-                                                    <span className="code-badge">{p.codigo}</span>
-                                                </td>
-                                                <td>
-                                                    <strong>{p.nome}</strong>
-                                                    {p.descricao && (
-                                                        <div className="product-description">
-                                                            {p.descricao}
-                                                        </div>
-                                                    )}
-                                                </td>
-                                                <td>{p.id_categoria}</td>
-                                                <td>
-                                                    <span className="price-text">
-                                                        R$ {Number(p.preco_unitario).toFixed(2)}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className="stock-pill">{p.quantidade_minima} un</span>
-                                                </td>
-                                                <td>
-                                                    <div className="action-buttons">
-                                                        <button
-                                                            className="btn-action-edit"
-                                                            onClick={() => handleEdit(p)}
-                                                            aria-label={`Editar ${p.nome}`}
-                                                            title="Editar produto"
-                                                        >
-                                                            <Pencil size={15} />
-                                                            Editar
-                                                        </button>
-                                                        <button
-                                                            className="btn-action-delete"
-                                                            onClick={() => handleRemoverProduto(p.id_produto, p.codigo)}
-                                                            aria-label={`Excluir ${p.nome}`}
-                                                            title="Excluir produto"
-                                                        >
-                                                            <Trash2 size={15} />
-                                                            Excluir
-                                                        </button>
+                            <div className="product-grid">
+                                {produtosFiltrados.map((p) => {
+                                    const quantidade = Number(p.quantidade_disponivel ?? 0);
+                                    const estoqueBaixo = quantidade <= Number(p.quantidade_minima ?? 0);
+                                    const produtoKey = String(p.id_produto ?? p.codigo);
+                                    const imagemUrl = imagensComErro[produtoKey] ? undefined : getImagemProduto(p);
+                                    const mostrarImagem = Boolean(imagemUrl) && !imagensComErro[produtoKey];
+                                    const categoriaId = p.categoria_id ?? p.id_categoria;
+                                    const nomeCategoria = categorias.find((categoria) => categoria.id_categoria === categoriaId)?.nome
+                                        ?? p.categoria_nome
+                                        ?? "Sem Categoria";
+
+                                    return (
+                                        <article className="product-card" key={produtoKey}>
+                                            <div className={`product-card-media ${mostrarImagem ? "" : "fallback-active"}`}>
+                                                {mostrarImagem ? (
+                                                    <img
+                                                        src={imagemUrl}
+                                                        alt={p.nome}
+                                                        onError={() => setImagensComErro((current) => ({ ...current, [produtoKey]: true }))}
+                                                    />
+                                                ) : (
+                                                    <div className="product-image-fallback">
+                                                        <Package size={32} strokeWidth={1.5} aria-hidden="true" />
+                                                        <span>Sem imagem</span>
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                                )}
+                                                <span className="product-category-badge">{nomeCategoria}</span>
+                                            </div>
+                                            <div className="product-card-body">
+                                                <div className="product-card-heading">
+                                                    <div>
+                                                        <h3>{p.nome}</h3>
+                                                        <span className="product-sku">SKU {p.codigo}</span>
+                                                    </div>
+                                                    <Package size={18} aria-hidden="true" />
+                                                </div>
+                                                {p.descricao && <p className="product-card-description">{p.descricao}</p>}
+                                                <div className="product-card-meta">
+                                                    <strong className="product-card-price">R$ {Number(p.preco_unitario).toFixed(2)}</strong>
+                                                    <span className={`product-stock-status ${estoqueBaixo ? "low" : "available"}`}>
+                                                        {estoqueBaixo ? "Baixo estoque" : "Em estoque"}
+                                                    </span>
+                                                </div>
+                                                <div className="product-card-stock">{quantidade} un. disponíveis <span>mín. {p.quantidade_minima}</span></div>
+                                                <div className="product-card-actions">
+                                                    <button className="btn-action-edit" onClick={() => handleEdit(p)} aria-label={`Editar ${p.nome}`} title="Editar produto">
+                                                        <Pencil size={15} /> Editar
+                                                    </button>
+                                                    <button className="btn-action-delete" onClick={() => handleRemoverProduto(p.id_produto, p.codigo)} aria-label={`Excluir ${p.nome}`} title="Excluir produto">
+                                                        <Trash2 size={15} /> Excluir
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    );
+                                })}
                             </div>
                         )}
                     </section>

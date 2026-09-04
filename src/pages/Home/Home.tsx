@@ -28,9 +28,27 @@ function formatCurrency(value: number) {
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 }
 
+function formatMovementDate(dateValue?: Date | string) {
+    if (!dateValue) return "Data não informada";
+    const date = new Date(dateValue);
+    return Number.isNaN(date.getTime()) ? "Data não informada" : date.toLocaleDateString("pt-BR");
+}
+
+function getImagemDestaque(produto: ProdutoDTO) {
+    const imagemCadastrada = produto.imagem?.trim() || produto.imagem_url?.trim();
+    if (imagemCadastrada) return imagemCadastrada;
+
+    const nome = produto.nome.toLowerCase();
+    if (nome.includes("teclado")) return "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=500&q=80";
+    if (nome.includes("mouse")) return "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=500&q=80";
+    if (nome.includes("ssd") || nome.includes("ram") || nome.includes("memória") || nome.includes("memoria")) return "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=500&q=80";
+    return "https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=500&q=80";
+}
+
 export default function Home() {
     const [data, setData] = useState<DashboardData>(emptyData);
     const [carregando, setCarregando] = useState(true);
+    const [imagensComErro, setImagensComErro] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         let ativo = true;
@@ -66,6 +84,9 @@ export default function Home() {
     const estoqueBaixo = data.produtos.filter((produto) => Number(produto.quantidade_disponivel ?? 0) <= Number(produto.quantidade_minima ?? 0)).length;
     const valorInventario = data.produtos.reduce((total, produto) => total + Number(produto.preco_unitario ?? 0) * Number(produto.quantidade_disponivel ?? 0), 0);
     const volumeMovimentacoes = entradas + saidas;
+    const ultimasMovimentacoes = [...data.movimentacoes]
+        .sort((a, b) => new Date(b.data_movimentacao ?? 0).getTime() - new Date(a.data_movimentacao ?? 0).getTime())
+        .slice(0, 4);
 
     const estatisticas = [
         { label: "Total em estoque", value: `${data.produtos.length.toLocaleString("pt-BR")} itens`, detail: "Produtos cadastrados", badge: "+5,4% este mês", progress: Math.min(data.produtos.length * 4, 100), icon: Package, tone: "teal" },
@@ -102,7 +123,7 @@ export default function Home() {
             <section className="dashboard-lower-grid">
                 <article className="dashboard-panel dashboard-shortcuts">
                     <div className="dashboard-panel-heading">
-                        <div><span className="dashboard-eyebrow">Ações rápidas</span><h2>Gestão rápida</h2></div>
+                        <div><span className="dashboard-eyebrow">Atalhos do sistema</span><h2>Gestão rápida</h2></div>
                         <PlusCircle size={20} aria-hidden="true" />
                     </div>
                     <div className="shortcut-list">
@@ -114,8 +135,53 @@ export default function Home() {
                 </article>
 
                 <article className="dashboard-panel dashboard-critical-stock">
-                    <div className="dashboard-panel-heading"><div><span className="dashboard-eyebrow">Reposição prioritária</span><h2>Estoque crítico</h2></div><AlertTriangle size={20} /></div>
-                    {produtosCriticos.length === 0 ? <p className="dashboard-empty">Sem alertas de reposição no momento.</p> : <div className="critical-list">{produtosCriticos.map((produto) => { const quantidade = Number(produto.quantidade_disponivel ?? 0); const minimo = Number(produto.quantidade_minima ?? 0); return <div className="critical-item" key={produto.id_produto ?? produto.codigo}><span className="critical-product-icon"><Package size={17} /></span><span className="critical-product-copy"><strong>{produto.nome}</strong><small>{produto.codigo} · mínimo de {minimo} un.</small></span><span className="critical-quantity"><b>{quantidade}</b><small>un.</small><span className="critical-bar"><i style={{ width: `${Math.min((quantidade / Math.max(minimo, 1)) * 100, 100)}%` }} /></span></span></div>; })}</div>}
+                    {produtosCriticos.length === 0 ? (
+                        <div className="recent-movements">
+                            <div className="recent-movements-heading">
+                                <div><span className="dashboard-eyebrow">Histórico</span><h2>Últimas movimentações</h2></div>
+                                <span className="inventory-status">Estoque em dia</span>
+                            </div>
+                            {ultimasMovimentacoes.length === 0 ? (
+                                <p className="dashboard-empty">Nenhuma movimentação registrada.</p>
+                            ) : (
+                                <div className="recent-movement-list">
+                                    {ultimasMovimentacoes.map((movimentacao, index) => {
+                                        const entrada = movimentacao.tipo_movimentacao === "ENTRADA";
+                                        return (
+                                            <div className="recent-movement-item" key={movimentacao.id_movimentacao ?? index}>
+                                                <span className={`movement-dot ${entrada ? "entrada" : "saida"}`} />
+                                                <span className="movement-copy"><strong>{entrada ? "Entrada" : "Saída"}: Produto #{movimentacao.id_produto}</strong><small>{formatMovementDate(movimentacao.data_movimentacao)}</small></span>
+                                                <span className="movement-quantity">{entrada ? "+" : "-"}{movimentacao.quantidade} un.</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="critical-alerts">
+                            <div className="dashboard-panel-heading">
+                                <div><span className="dashboard-eyebrow alert-eyebrow">Alertas de reposição</span><h2>Estoque crítico</h2></div>
+                                <span className="inventory-status critical-status">{produtosCriticos.length} itens em alerta</span>
+                            </div>
+                            <div className="critical-alert-list">
+                            {produtosCriticos.map((produto) => {
+                                const produtoKey = String(produto.id_produto ?? produto.codigo);
+                                const quantidade = Number(produto.quantidade_disponivel ?? 0);
+                                const imagem = imagensComErro[produtoKey] ? undefined : getImagemDestaque(produto);
+                                return (
+                                    <div className="critical-alert-item" key={produtoKey}>
+                                        <div className="critical-alert-image">
+                                            {imagem ? <img src={imagem} alt={produto.nome} onError={() => setImagensComErro((current) => ({ ...current, [produtoKey]: true }))} /> : <Package size={30} strokeWidth={1.5} aria-label="Imagem indisponível" />}
+                                        </div>
+                                        <div className="critical-alert-copy"><strong title={produto.nome}>{produto.nome}</strong><small>SKU: {produto.codigo}</small></div>
+                                        <span className="critical-quantity-tag">{quantidade} un. restante{quantidade === 1 ? "" : "s"}</span>
+                                    </div>
+                                );
+                            })}
+                            </div>
+                        </div>
+                    )}
                 </article>
             </section>
         </div>

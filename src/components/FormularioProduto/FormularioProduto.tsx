@@ -15,6 +15,7 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
         nome: "",
         id_categoria: 1,
         descricao: "",
+        imagem: "",
         preco_unitario: "",
         quantidade_minima: ""
     };
@@ -24,6 +25,7 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
         nome: "",
         id_categoria: 1,
         descricao: "",
+        imagem: "",
         preco_unitario: "",
         quantidade_minima: ""
     });
@@ -37,6 +39,7 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
                 nome: produtoParaEditar.nome || "",
                 id_categoria: produtoParaEditar.id_categoria || 1,
                 descricao: produtoParaEditar.descricao || "",
+                imagem: produtoParaEditar.imagem || produtoParaEditar.imagem_url || "",
                 preco_unitario: String(produtoParaEditar.preco_unitario ?? ""),
                 quantidade_minima: String(produtoParaEditar.quantidade_minima ?? "")
             });
@@ -86,6 +89,7 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
             nome: formData.nome.trim(),
             id_categoria: Number(formData.id_categoria) || 1,
             descricao: formData.descricao.trim(),
+            imagem: formData.imagem.trim() || undefined,
             preco_unitario: preco,
             quantidade_minima: qtdMin
         };
@@ -188,6 +192,19 @@ export const FormularioProduto: React.FC<Props> = ({ produtoParaEditar, onSubmit
                             onChange={handleChange}
                             rows={3}
                             placeholder="Observações do item..."
+                        />
+                    </div>
+
+                    <div className="field-box col-span-2">
+                        <label htmlFor="imagem">URL da Imagem</label>
+                        <input
+                            id="imagem"
+                            name="imagem"
+                            type="url"
+                            value={formData.imagem}
+                            onChange={handleChange}
+                            placeholder="https://exemplo.com/foto.jpg"
+                            autoComplete="url"
                         />
                     </div>
                 </div>

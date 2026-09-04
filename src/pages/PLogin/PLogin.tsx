@@ -49,36 +49,50 @@ export default function PLogin() {
 
     return (
         <main className="login-page">
-            <section className="login-card" aria-labelledby="login-title">
-                <div className="login-heading">
-                    <span className="login-mark" aria-hidden="true">IT</span>
-                    <h1 id="login-title">InfoTech Admin</h1>
-                    <p>Painel de Controle e Gestão</p>
+            <section className="login-brand-panel" aria-label="InfoTech Admin">
+                <div className="login-brand-header">
+                    <span className="login-brand-mark" aria-hidden="true">IT</span>
+                    <span className="login-brand-name">InfoTech <strong>Admin</strong></span>
                 </div>
+                <div className="login-brand-content">
+                    <span className="login-brand-badge">ERP Enterprise</span>
+                    <h1>Gestão Integrada e Controle Operacional</h1>
+                    <p>Plataforma centralizada para monitoramento de estoque, movimentações e relatórios em tempo real.</p>
+                </div>
+                <div className="login-brand-footer"><span className="login-secure-dot" /> Ambiente Seguro <span aria-hidden="true">•</span> v1.0.0</div>
+            </section>
 
-                {mensagemErro && <div className="login-alert" role="alert">{mensagemErro}</div>}
-
-                <form className="login-form" onSubmit={handleSubmit}>
-                    <div className="login-field">
-                        <label htmlFor="login-email">E-mail</label>
-                        <div className="login-input-wrap">
-                            <Mail size={18} aria-hidden="true" />
-                            <input id="login-email" type="email" value={formData.email} onChange={(event) => handleChange("email", event.target.value)} placeholder="seu.email@empresa.com" autoComplete="email" required />
-                        </div>
+            <section className="login-form-panel" aria-labelledby="login-title">
+                <div className="login-card">
+                    <div className="login-heading">
+                        <h2 id="login-title">Acesse sua conta</h2>
+                        <p>Informe suas credenciais para continuar</p>
                     </div>
 
-                    <div className="login-field">
-                        <label htmlFor="login-senha">Senha</label>
-                        <div className="login-input-wrap">
-                            <Lock size={18} aria-hidden="true" />
-                            <input id="login-senha" type="password" value={formData.senha} onChange={(event) => handleChange("senha", event.target.value)} placeholder="Digite sua senha" autoComplete="current-password" required />
-                        </div>
-                    </div>
+                    {mensagemErro && <div className="login-alert" role="alert">{mensagemErro}</div>}
 
-                    <button className="login-submit" type="submit" disabled={carregando}>
-                        {carregando ? <><LoaderCircle className="login-spinner" size={18} aria-hidden="true" /> Autenticando...</> : "Entrar no Sistema"}
-                    </button>
-                </form>
+                    <form className="login-form" onSubmit={handleSubmit}>
+                        <div className="login-field">
+                            <label htmlFor="login-email">E-mail</label>
+                            <div className="login-input-wrap">
+                                <Mail size={18} aria-hidden="true" />
+                                <input id="login-email" type="email" value={formData.email} onChange={(event) => handleChange("email", event.target.value)} placeholder="seu.email@empresa.com" autoComplete="email" required />
+                            </div>
+                        </div>
+
+                        <div className="login-field">
+                            <label htmlFor="login-senha">Senha</label>
+                            <div className="login-input-wrap">
+                                <Lock size={18} aria-hidden="true" />
+                                <input id="login-senha" type="password" value={formData.senha} onChange={(event) => handleChange("senha", event.target.value)} placeholder="Digite sua senha" autoComplete="current-password" required />
+                            </div>
+                        </div>
+
+                        <button className="login-submit" type="submit" disabled={carregando}>
+                            {carregando ? <><LoaderCircle className="login-spinner" size={18} aria-hidden="true" /> Autenticando...</> : "Entrar no Sistema"}
+                        </button>
+                    </form>
+                </div>
             </section>
         </main>
     );
