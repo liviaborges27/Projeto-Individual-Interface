@@ -1,0 +1,22 @@
+/* PMovimentacoes.css */
+@import '../PCategorias/PCategorias.css';
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.type-badge.entrada {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.type-badge.saida {
+  background: #fee2e2;
+  color: #b91c1c;
+}
