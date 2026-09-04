@@ -3,6 +3,7 @@ import { Filter, PackageOpen, Pencil, Search, Server, Trash2 } from "lucide-reac
 import type ProdutoDTO from "../../dto/ProdutoDTO";
 import { ProdutoRequests } from "../../fetch/ProdutoRequests";
 import { FormularioProduto } from "../../components/FormularioProduto/FormularioProduto";
+import Navegacao from "../../components/Navegacao/Navegacao"; // <--- 1. Import do componente Navegacao
 import "./PHome.css";
 
 export default function PHome() {
@@ -96,156 +97,161 @@ export default function PHome() {
     };
 
     return (
-        <div className="erp-shell">
-            {/* Topbar Corporativa */}
-            <header className="erp-topbar">
-                <div className="brand-section">
-                    <div className="brand-icon" aria-label="ERP">
-                        <Server size={20} strokeWidth={2.2} />
-                    </div>
-                    <div className="brand-title">
-                        <h1><Server size={18} /> Controle InfoTech</h1>
-                        <p>Controle central de produtos, precificação e estoque</p>
-                    </div>
-                </div>
+        <div>
+            {/* 2. Inclusão da Barra de Navegação no Topo */}
+            <Navegacao />
 
-                <div className="stat-pills">
-                    <div className="pill-stat">
-                        <span>Total de Itens:</span>
-                        <strong>{produtos.length}</strong>
-                    </div>
-                </div>
-            </header>
-
-            {/* Banner de Notificação */}
-            {mensagemStatus && (
-                <div className={`erp-toast ${tipoStatus}`}>
-                    <span>{mensagemStatus}</span>
-                    <button
-                        className="toast-close"
-                        onClick={() => setMensagemStatus(null)}
-                        aria-label="Fechar aviso"
-                    >
-                        ✕
-                    </button>
-                </div>
-            )}
-
-            {/* Área de Trabalho principal */}
-            <main className="erp-workspace">
-                <aside className="erp-col-form">
-                    <FormularioProduto
-                        produtoParaEditar={produtoSelecionado}
-                        onSubmit={handleSalvarProduto}
-                        onCancelar={handleCancelEdit}
-                    />
-                </aside>
-
-                <section className="erp-card-table">
-                    <div className="table-toolbar">
-                        <div className="table-heading">
-                            <h2>Inventário Registrado <span>{produtos.length}</span></h2>
-                            <p>Consulte e gerencie os produtos cadastrados</p>
+            <div className="erp-shell">
+                {/* Topbar Corporativa */}
+                <header className="erp-topbar">
+                    <div className="brand-section">
+                        <div className="brand-icon" aria-label="ERP">
+                            <Server size={20} strokeWidth={2.2} />
                         </div>
-                        <div className="table-controls">
-                            <label className="search-box">
-                                <Search size={16} aria-hidden="true" />
-                                <input
-                                    type="search"
-                                    placeholder="Buscar por nome ou código..."
-                                    value={termoBusca}
-                                    onChange={(event) => setTermoBusca(event.target.value)}
-                                    aria-label="Buscar por nome ou código"
-                                />
-                            </label>
-                            <button className="btn-filter" type="button" aria-label="Filtrar inventário" title="Filtrar inventário">
-                                <Filter size={16} />
-                            </button>
+                        <div className="brand-title">
+                            <h1><Server size={18} /> Controle InfoTech</h1>
+                            <p>Controle central de produtos, precificação e estoque</p>
                         </div>
                     </div>
 
-                    {carregando && produtos.length === 0 ? (
-                        <div className="state-empty">
-                            <h4>Carregando produtos...</h4>
+                    <div className="stat-pills">
+                        <div className="pill-stat">
+                            <span>Total de Itens:</span>
+                            <strong>{produtos.length}</strong>
                         </div>
-                    ) : produtos.length === 0 ? (
-                        <div className="state-empty">
-                            <div className="empty-icon"><PackageOpen size={28} /></div>
-                            <h4>Nenhum produto cadastrado</h4>
-                            <p>Utilize o formulário ao lado para incluir novos itens.</p>
+                    </div>
+                </header>
+
+                {/* Banner de Notificação */}
+                {mensagemStatus && (
+                    <div className={`erp-toast ${tipoStatus}`}>
+                        <span>{mensagemStatus}</span>
+                        <button
+                            className="toast-close"
+                            onClick={() => setMensagemStatus(null)}
+                            aria-label="Fechar aviso"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
+
+                {/* Área de Trabalho principal */}
+                <main className="erp-workspace">
+                    <aside className="erp-col-form">
+                        <FormularioProduto
+                            produtoParaEditar={produtoSelecionado}
+                            onSubmit={handleSalvarProduto}
+                            onCancelar={handleCancelEdit}
+                        />
+                    </aside>
+
+                    <section className="erp-card-table">
+                        <div className="table-toolbar">
+                            <div className="table-heading">
+                                <h2>Inventário Registrado <span>{produtos.length}</span></h2>
+                                <p>Consulte e gerencie os produtos cadastrados</p>
+                            </div>
+                            <div className="table-controls">
+                                <label className="search-box">
+                                    <Search size={16} aria-hidden="true" />
+                                    <input
+                                        type="search"
+                                        placeholder="Buscar por nome ou código..."
+                                        value={termoBusca}
+                                        onChange={(event) => setTermoBusca(event.target.value)}
+                                        aria-label="Buscar por nome ou código"
+                                    />
+                                </label>
+                                <button className="btn-filter" type="button" aria-label="Filtrar inventário" title="Filtrar inventário">
+                                    <Filter size={16} />
+                                </button>
+                            </div>
                         </div>
-                    ) : produtosFiltrados.length === 0 ? (
-                        <div className="state-empty">
-                            <div className="empty-icon"><Search size={28} /></div>
-                            <h4>Nenhum produto encontrado</h4>
-                            <p>Tente buscar por outro nome ou código.</p>
-                        </div>
-                    ) : (
-                        <div className="table-responsive">
-                            <table className="erp-table">
-                                <thead>
-                                    <tr>
-                                        <th>Código</th>
-                                        <th>Nome do Produto</th>
-                                        <th>Cat.</th>
-                                        <th>Preço Unitário</th>
-                                        <th>Qtd. Mínima</th>
-                                        <th style={{ textAlign: "right" }}>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {produtosFiltrados.map((p) => (
-                                        <tr key={p.id_produto || p.codigo}>
-                                            <td>
-                                                <span className="code-badge">{p.codigo}</span>
-                                            </td>
-                                            <td>
-                                                <strong>{p.nome}</strong>
-                                                {p.descricao && (
-                                                    <div className="product-description">
-                                                        {p.descricao}
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td>{p.id_categoria}</td>
-                                            <td>
-                                                <span className="price-text">
-                                                    R$ {Number(p.preco_unitario).toFixed(2)}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span className="stock-pill">{p.quantidade_minima} un</span>
-                                            </td>
-                                            <td>
-                                                <div className="action-buttons">
-                                                    <button
-                                                        className="btn-action-edit"
-                                                        onClick={() => handleEdit(p)}
-                                                        aria-label={`Editar ${p.nome}`}
-                                                        title="Editar produto"
-                                                    >
-                                                        <Pencil size={15} />
-                                                        Editar
-                                                    </button>
-                                                    <button
-                                                        className="btn-action-delete"
-                                                        onClick={() => handleRemoverProduto(p.id_produto, p.codigo)}
-                                                        aria-label={`Excluir ${p.nome}`}
-                                                        title="Excluir produto"
-                                                    >
-                                                        <Trash2 size={15} />
-                                                        Excluir
-                                                    </button>
-                                                </div>
-                                            </td>
+
+                        {carregando && produtos.length === 0 ? (
+                            <div className="state-empty">
+                                <h4>Carregando produtos...</h4>
+                            </div>
+                        ) : produtos.length === 0 ? (
+                            <div className="state-empty">
+                                <div className="empty-icon"><PackageOpen size={28} /></div>
+                                <h4>Nenhum produto cadastrado</h4>
+                                <p>Utilize o formulário ao lado para incluir novos itens.</p>
+                            </div>
+                        ) : produtosFiltrados.length === 0 ? (
+                            <div className="state-empty">
+                                <div className="empty-icon"><Search size={28} /></div>
+                                <h4>Nenhum produto encontrado</h4>
+                                <p>Tente buscar por outro nome ou código.</p>
+                            </div>
+                        ) : (
+                            <div className="table-responsive">
+                                <table className="erp-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Nome do Produto</th>
+                                            <th>Cat.</th>
+                                            <th>Preço Unitário</th>
+                                            <th>Qtd. Mínima</th>
+                                            <th style={{ textAlign: "right" }}>Ações</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </section>
-            </main>
+                                    </thead>
+                                    <tbody>
+                                        {produtosFiltrados.map((p) => (
+                                            <tr key={p.id_produto || p.codigo}>
+                                                <td>
+                                                    <span className="code-badge">{p.codigo}</span>
+                                                </td>
+                                                <td>
+                                                    <strong>{p.nome}</strong>
+                                                    {p.descricao && (
+                                                        <div className="product-description">
+                                                            {p.descricao}
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td>{p.id_categoria}</td>
+                                                <td>
+                                                    <span className="price-text">
+                                                        R$ {Number(p.preco_unitario).toFixed(2)}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span className="stock-pill">{p.quantidade_minima} un</span>
+                                                </td>
+                                                <td>
+                                                    <div className="action-buttons">
+                                                        <button
+                                                            className="btn-action-edit"
+                                                            onClick={() => handleEdit(p)}
+                                                            aria-label={`Editar ${p.nome}`}
+                                                            title="Editar produto"
+                                                        >
+                                                            <Pencil size={15} />
+                                                            Editar
+                                                        </button>
+                                                        <button
+                                                            className="btn-action-delete"
+                                                            onClick={() => handleRemoverProduto(p.id_produto, p.codigo)}
+                                                            aria-label={`Excluir ${p.nome}`}
+                                                            title="Excluir produto"
+                                                        >
+                                                            <Trash2 size={15} />
+                                                            Excluir
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </section>
+                </main>
+            </div>
         </div>
     );
 }

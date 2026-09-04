@@ -3,6 +3,7 @@ import { Filter, FolderOpen, Pencil, Search, Tags, Trash2 } from "lucide-react";
 import type CategoriaDTO from "../../dto/CategoriaDTO";
 import { CategoriaRequests } from "../../fetch/CategoriaRequests";
 import { FormularioCategoria } from "../../components/FormularioCategoria/FormularioCategoria";
+import Navegacao from "../../components/Navegacao/Navegacao"; // <--- 1. Import do componente Navegacao
 import "./PCategorias.css";
 
 export default function PCategorias() {
@@ -94,143 +95,148 @@ export default function PCategorias() {
     };
 
     return (
-        <div className="erp-shell">
-            {/* Topbar Corporativa */}
-            <header className="erp-topbar">
-                <div className="brand-section">
-                    <div className="brand-icon" aria-label="ERP">
-                        <Tags size={20} strokeWidth={2.2} />
-                    </div>
-                    <div className="brand-title">
-                        <h1><Tags size={18} /> Gestão de Categorias</h1>
-                        <p>Controle das categorias de produtos e organização do inventário</p>
-                    </div>
-                </div>
+        <div>
+            {/* 2. Inclusão da Barra de Navegação no Topo */}
+            <Navegacao />
 
-                <div className="stat-pills">
-                    <div className="pill-stat">
-                        <span>Total de Categorias:</span>
-                        <strong>{categorias.length}</strong>
-                    </div>
-                </div>
-            </header>
-
-            {/* Banner de Notificação */}
-            {mensagemStatus && (
-                <div className={`erp-toast ${tipoStatus}`}>
-                    <span>{mensagemStatus}</span>
-                    <button
-                        className="toast-close"
-                        onClick={() => setMensagemStatus(null)}
-                        aria-label="Fechar aviso"
-                    >
-                        ✕
-                    </button>
-                </div>
-            )}
-
-            {/* Área de Trabalho principal */}
-            <main className="erp-workspace">
-                <aside className="erp-col-form">
-                    <FormularioCategoria
-                        categoriaParaEditar={categoriaSelecionada}
-                        onSubmit={handleSalvarCategoria}
-                        onCancelar={handleCancelEdit}
-                    />
-                </aside>
-
-                <section className="erp-card-table">
-                    <div className="table-toolbar">
-                        <div className="table-heading">
-                            <h2>Categorias Cadastradas <span>{categorias.length}</span></h2>
-                            <p>Consulte e gerencie as categorias do sistema</p>
+            <div className="erp-shell">
+                {/* Topbar Corporativa */}
+                <header className="erp-topbar">
+                    <div className="brand-section">
+                        <div className="brand-icon" aria-label="ERP">
+                            <Tags size={20} strokeWidth={2.2} />
                         </div>
-                        <div className="table-controls">
-                            <label className="search-box">
-                                <Search size={16} aria-hidden="true" />
-                                <input
-                                    type="search"
-                                    placeholder="Buscar por nome..."
-                                    value={termoBusca}
-                                    onChange={(event) => setTermoBusca(event.target.value)}
-                                    aria-label="Buscar por nome"
-                                />
-                            </label>
-                            <button className="btn-filter" type="button" aria-label="Filtrar categorias" title="Filtrar categorias">
-                                <Filter size={16} />
-                            </button>
+                        <div className="brand-title">
+                            <h1><Tags size={18} /> Gestão de Categorias</h1>
+                            <p>Controle das categorias de produtos e organização do inventário</p>
                         </div>
                     </div>
 
-                    {carregando && categorias.length === 0 ? (
-                        <div className="state-empty">
-                            <h4>Carregando categorias...</h4>
+                    <div className="stat-pills">
+                        <div className="pill-stat">
+                            <span>Total de Categorias:</span>
+                            <strong>{categorias.length}</strong>
                         </div>
-                    ) : categorias.length === 0 ? (
-                        <div className="state-empty">
-                            <div className="empty-icon"><FolderOpen size={28} /></div>
-                            <h4>Nenhuma categoria cadastrada</h4>
-                            <p>Utilize o formulário ao lado para incluir novas categorias.</p>
+                    </div>
+                </header>
+
+                {/* Banner de Notificação */}
+                {mensagemStatus && (
+                    <div className={`erp-toast ${tipoStatus}`}>
+                        <span>{mensagemStatus}</span>
+                        <button
+                            className="toast-close"
+                            onClick={() => setMensagemStatus(null)}
+                            aria-label="Fechar aviso"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
+
+                {/* Área de Trabalho principal */}
+                <main className="erp-workspace">
+                    <aside className="erp-col-form">
+                        <FormularioCategoria
+                            categoriaParaEditar={categoriaSelecionada}
+                            onSubmit={handleSalvarCategoria}
+                            onCancelar={handleCancelEdit}
+                        />
+                    </aside>
+
+                    <section className="erp-card-table">
+                        <div className="table-toolbar">
+                            <div className="table-heading">
+                                <h2>Categorias Cadastradas <span>{categorias.length}</span></h2>
+                                <p>Consulte e gerencie as categorias do sistema</p>
+                            </div>
+                            <div className="table-controls">
+                                <label className="search-box">
+                                    <Search size={16} aria-hidden="true" />
+                                    <input
+                                        type="search"
+                                        placeholder="Buscar por nome..."
+                                        value={termoBusca}
+                                        onChange={(event) => setTermoBusca(event.target.value)}
+                                        aria-label="Buscar por nome"
+                                    />
+                                </label>
+                                <button className="btn-filter" type="button" aria-label="Filtrar categorias" title="Filtrar categorias">
+                                    <Filter size={16} />
+                                </button>
+                            </div>
                         </div>
-                    ) : categoriasFiltradas.length === 0 ? (
-                        <div className="state-empty">
-                            <div className="empty-icon"><Search size={28} /></div>
-                            <h4>Nenhuma categoria encontrada</h4>
-                            <p>Tente buscar por outro termo.</p>
-                        </div>
-                    ) : (
-                        <div className="table-responsive">
-                            <table className="erp-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nome da Categoria</th>
-                                        <th>Descrição</th>
-                                        <th style={{ textAlign: "right" }}>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {categoriasFiltradas.map((c) => (
-                                        <tr key={c.id_categoria}>
-                                            <td>
-                                                <span className="code-badge">#{c.id_categoria}</span>
-                                            </td>
-                                            <td>
-                                                <strong>{c.nome}</strong>
-                                            </td>
-                                            <td>
-                                                {c.descricao ? c.descricao : <span className="text-muted">-</span>}
-                                            </td>
-                                            <td>
-                                                <div className="action-buttons">
-                                                    <button
-                                                        className="btn-action-edit"
-                                                        onClick={() => handleEdit(c)}
-                                                        aria-label={`Editar ${c.nome}`}
-                                                        title="Editar categoria"
-                                                    >
-                                                        <Pencil size={15} />
-                                                        Editar
-                                                    </button>
-                                                    <button
-                                                        className="btn-action-delete"
-                                                        onClick={() => handleRemoverCategoria(c.id_categoria)}
-                                                        aria-label={`Excluir ${c.nome}`}
-                                                        title="Excluir categoria"
-                                                    >
-                                                        <Trash2 size={15} />
-                                                        Excluir
-                                                    </button>
-                                                </div>
-                                            </td>
+
+                        {carregando && categorias.length === 0 ? (
+                            <div className="state-empty">
+                                <h4>Carregando categorias...</h4>
+                            </div>
+                        ) : categorias.length === 0 ? (
+                            <div className="state-empty">
+                                <div className="empty-icon"><FolderOpen size={28} /></div>
+                                <h4>Nenhuma categoria cadastrada</h4>
+                                <p>Utilize o formulário ao lado para incluir novas categorias.</p>
+                            </div>
+                        ) : categoriasFiltradas.length === 0 ? (
+                            <div className="state-empty">
+                                <div className="empty-icon"><Search size={28} /></div>
+                                <h4>Nenhuma categoria encontrada</h4>
+                                <p>Tente buscar por outro termo.</p>
+                            </div>
+                        ) : (
+                            <div className="table-responsive">
+                                <table className="erp-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nome da Categoria</th>
+                                            <th>Descrição</th>
+                                            <th style={{ textAlign: "right" }}>Ações</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </section>
-            </main>
+                                    </thead>
+                                    <tbody>
+                                        {categoriasFiltradas.map((c) => (
+                                            <tr key={c.id_categoria}>
+                                                <td>
+                                                    <span className="code-badge">#{c.id_categoria}</span>
+                                                </td>
+                                                <td>
+                                                    <strong>{c.nome}</strong>
+                                                </td>
+                                                <td>
+                                                    {c.descricao ? c.descricao : <span className="text-muted">-</span>}
+                                                </td>
+                                                <td>
+                                                    <div className="action-buttons">
+                                                        <button
+                                                            className="btn-action-edit"
+                                                            onClick={() => handleEdit(c)}
+                                                            aria-label={`Editar ${c.nome}`}
+                                                            title="Editar categoria"
+                                                        >
+                                                            <Pencil size={15} />
+                                                            Editar
+                                                        </button>
+                                                        <button
+                                                            className="btn-action-delete"
+                                                            onClick={() => handleRemoverCategoria(c.id_categoria)}
+                                                            aria-label={`Excluir ${c.nome}`}
+                                                            title="Excluir categoria"
+                                                        >
+                                                            <Trash2 size={15} />
+                                                            Excluir
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </section>
+                </main>
+            </div>
         </div>
     );
 }
